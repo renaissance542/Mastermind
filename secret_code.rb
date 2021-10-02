@@ -1,13 +1,19 @@
+# frozen_string_literal: true
+
 # generate and keep code, and give guess feedback
 class SecretCode
-  attr_accessor :colors, :secret_code
+  attr_accessor :possible_colors, :secret_code
 
   def initialize
-    @colors = %w[Red Blue White Green Yellow Black]
+    @possible_colors = %w[Red Blue White Green Yellow Black]
     @secret_code = generate_code
+    @unmatched_guesses = []
+    @unmatched_secrets = []
   end
 
-  def guess_code(guess)
+  def submit_guess(guess)
+    @unmatched_guesses = [0, 1, 2, 3]
+    @unmatched_secrets = [0, 1, 2, 3]
     fill_red_pegs(guess)
     fill_white_pegs(guess)
     guess
@@ -17,31 +23,31 @@ class SecretCode
 
   def generate_code
     code = []
-    4.times { code.push(@colors.sample) }
+    4.times { code.push(@possible_colors   .sample) }
     code
   end
 
   def fill_red_pegs(guess)
     0.upto(3) do |i|
-      if guess.code[i] == @secret_code[i]
-        guess.feedback.push('Red')
-        # any guess that got 'Red' feedback
-        # cannot recieve additional feedback
-        guess.unmatched_guesses.delete(i)
-        guess.unmatched_secrets.delete(i)
-      end
+      next unless guess.code[i] == @secret_code[i]
+
+      guess.feedback.push('Red')
+      # any guess that got 'Red' feedback
+      # cannot recieve additional feedback
+      @unmatched_guesses.delete(i)
+      @unmatched_secrets.delete(i)
     end
   end
 
   def fill_white_pegs(guess)
-    guess.unmatched_guesses.each do |i|
-      guess.unmatched_secrets.each do |j|
-        if guess.code[i] == @secret_code[j]
-          guess.feedback.push('White')
-          # only one feedback per peg
-          guess.unmatched_secrets.delete(j)
-          break
-        end
+    @unmatched_guesses.each do |i|
+      @unmatched_secrets.each do |j|
+        next unless guess.code[i] == @secret_code[j]
+
+        guess.feedback.push('White')
+        # only one feedback per peg
+        @unmatched_secrets.delete(j)
+        break
       end
     end
   end

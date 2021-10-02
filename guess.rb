@@ -2,12 +2,10 @@
 
 # stores guess information and feedback
 class Guess
-  attr_accessor :code, :feedback, :unmatched_guesses, :unmatched_secrets
+  attr_accessor :code, :feedback
 
   def initialize
     @code = %w[]
     @feedback = []
-    @unmatched_guesses = [0, 1, 2, 3]
-    @unmatched_secrets = [0, 1, 2, 3]
   end
 end
