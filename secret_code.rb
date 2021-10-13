@@ -7,8 +7,6 @@ class SecretCode
   def initialize
     @possible_colors = %w[Red Blue White Green Yellow Black]
     @secret_code = generate_code
-    @unmatched_guesses = []
-    @unmatched_secrets = []
   end
 
   def submit_guess(guess)
@@ -23,7 +21,7 @@ class SecretCode
 
   def generate_code
     code = []
-    4.times { code.push(@possible_colors   .sample) }
+    4.times { code.push(@possible_colors.sample) }
     code
   end
 
