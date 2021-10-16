@@ -5,11 +5,11 @@ class SecretCode
   attr_accessor :possible_colors, :secret_code
 
   def initialize
-    @possible_colors = %w[Red Blue White Green Yellow Black]
+    @possible_colors = %w[red blue white green yellow black]
     @secret_code = generate_code
   end
 
-  def submit_guess(guess)
+  def generate_feedback(guess)
     @unmatched_guesses = [0, 1, 2, 3]
     @unmatched_secrets = [0, 1, 2, 3]
     fill_red_pegs(guess)
@@ -29,8 +29,8 @@ class SecretCode
     0.upto(3) do |i|
       next unless guess.code[i] == @secret_code[i]
 
-      guess.feedback.push('Red')
-      # any guess that got 'Red' feedback
+      guess.feedback.push('red')
+      # any guess that got 'red' feedback
       # cannot recieve additional feedback
       @unmatched_guesses.delete(i)
       @unmatched_secrets.delete(i)
@@ -42,7 +42,7 @@ class SecretCode
       @unmatched_secrets.each do |j|
         next unless guess.code[i] == @secret_code[j]
 
-        guess.feedback.push('White')
+        guess.feedback.push('white')
         # only one feedback per peg
         @unmatched_secrets.delete(j)
         break

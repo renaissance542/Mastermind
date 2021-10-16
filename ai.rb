@@ -12,6 +12,7 @@ class Ai
     @swappable_indices = [0, 1, 2, 3]
     @last_swapped = []
     @guesslist = []
+    @guesslist.push(guess_new_color)
   end
 
 # a guess should randomly pick a color to try
@@ -22,14 +23,11 @@ class Ai
 
     if @guesslist.empty?
       @new_pegs = guess.feedback.length
-      @delta_red_pegs = guess.feedback.count('Red')
+      @delta_red_pegs = guess.feedback.count('red')
     else
       @new_pegs = guess.feedback.length - @guesslist.last.feedback.length
-      @delta_red_pegs = guess.feedback.count('Red') - @guesslist.last.feedback.count('Red')
+      @delta_red_pegs = guess.feedback.count('red') - @guesslist.last.feedback.count('red')
     end
-
-
-    
 
     @guesslist.push(guess)
     
@@ -45,7 +43,7 @@ class Ai
 
     # if guess.feedback.length < 4 &&
     #   guess.feedback.length == @guesslist.last.feedback.length &&
-    #   !guess.feedback.include?('White')
+    #   !guess.feedback.include?('white')
     #   guess.feedback.length.times {|i| @swappable_indices.delete(i)}
     # end
 
@@ -53,7 +51,7 @@ class Ai
     puts "guess colors = #{guess.code}"
     puts "feedback pegs = #{guess.feedback}"
 
-    generate_guess unless @guesslist.last.feedback.count('Red') == 4
+    generate_guess unless @guesslist.last.feedback.count('red') == 4
     
   end
 
@@ -65,7 +63,7 @@ class Ai
     if @guesslist.last.feedback.length < 4
       @guesslist.push(guess_new_color)
 
-    elsif @guesslist.last.feedback.count('White') > 2
+    elsif @guesslist.last.feedback.count('white') > 2
       @guesslist.push(rotate_guess)
       @last_swapped = []
 
@@ -107,15 +105,14 @@ class Ai
   end
 
   def guess_for_position
-    # puts "guess_for_position called"
-    # randomly pick 2 unlocked positions of different color from last guess
 
+    # randomly pick 2 unlocked positions of different color from last guess
     duplicate_guess = [1]
     until duplicate_guess.empty? 
       next_guess = @guesslist.last.code.clone
-      puts "\nnext guess set to last guess: #{next_guess}"
-      puts "last feedback = #{@guesslist.last.feedback}"
-      puts "swappable_indices = #{@swappable_indices}"
+      # puts "\nnext guess set to last guess: #{next_guess}"
+      # puts "last feedback = #{@guesslist.last.feedback}"
+      # puts "swappable_indices = #{@swappable_indices}"
 
       # repick the positions if they point to the same color in the code
       @last_swapped = @swappable_indices.sample(2)
@@ -126,13 +123,13 @@ class Ai
       # swap those 2 positions for the next guess
       next_guess[@last_swapped[0]], next_guess[@last_swapped[1]] = 
         next_guess[@last_swapped[1]], next_guess[@last_swapped[0]]
-      puts "next_guess swapped to = #{next_guess}"
+      # puts "next_guess swapped to = #{next_guess}"
       duplicate_guess = @guesslist.select {|guess| guess.code == next_guess}
 
 
-      puts "duplicate_guess = #{duplicate_guess}"
-      counter = 0
-      @guesslist.each {|g| puts "Guess ##{counter += 1}: #{g.code}"}
+      # puts "duplicate_guess = #{duplicate_guess}"
+      # counter = 0
+      # @guesslist.each {|g| puts "Guess ##{counter += 1}: #{g.code}"}
 
     end
 

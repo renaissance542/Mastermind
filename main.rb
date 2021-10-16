@@ -1,6 +1,6 @@
 
 
-require 'pry'
+require 'pry-byebug'
 require_relative 'game'
 
 game = Game.new
