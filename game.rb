@@ -110,8 +110,6 @@ class Game
     puts game_over_message('create')
   end
 
-
-
   def play_guess_the_code
     until game_over?
       puts <<~GUESS
