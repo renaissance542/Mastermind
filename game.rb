@@ -98,11 +98,9 @@ class Game
 
     until game_over?
 
-      @guess = @secret_code.generate_feedback(computer_player.get_guess)
+      @guess = @secret_code.generate_feedback(computer_player.generate_guess)
       computer_player.process_feedback(@guess)
       @guesses_remaining -= 1
-    
-      # binding.pry
       @game_won = false if @guess.feedback.count('red') == 4
 
       # puts "\nAI confirmed these colors = #{computer_player.confirmed_colors}"
@@ -120,6 +118,7 @@ class Game
         Your guess feedback is: #{@secret_code.generate_feedback(build_guess).feedback}
       GUESS
       @guesses_remaining -= 1
+      @game_won = false if @guesses_remaining.zero?
     end
     puts game_over_message('guess')
   end
@@ -160,7 +159,6 @@ class Game
   end
 
   def game_over?
-    @game_won = false if @guesses_remaining.zero?
     @guesses_remaining.zero? ||
       @guess.code.eql?(@secret_code.secret_code)
   end
