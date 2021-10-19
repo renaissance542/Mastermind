@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 require_relative 'guess'
-#rubocop:disable all
+
 # computer player to solve code
 class Ai
   attr_accessor :confirmed_colors, :swappable_indices
 
   def initialize(colors)
-    @possible_colors = colors  # delete after testing
+    @possible_colors = colors # delete after testing
     @confirmed_colors = %w[]
     @swappable_indices = [0, 1, 2, 3]
     @last_swapped = []
@@ -15,20 +15,9 @@ class Ai
     @guesslist.push(guess_new_color)
   end
 
-# a guess should randomly pick a color to try
-# or randomly pick a position to try
-# or somehow, both
-
   def process_feedback(guess)
 
-    if @guesslist.empty?
-      @new_pegs = guess.feedback.length
-      @delta_red_pegs = guess.feedback.count('red')
-    else
-      @new_pegs = guess.feedback.length - @guesslist.last.feedback.length
-      @delta_red_pegs = guess.feedback.count('red') - @guesslist.last.feedback.count('red')
-    end
-
+    count_feedback_pegs(guess)
     @guesslist.push(guess)
     
     # successfully guessed new color
@@ -52,7 +41,15 @@ class Ai
     puts "feedback pegs = #{guess.feedback}"
 
     generate_guess unless @guesslist.last.feedback.count('red') == 4
-    
+  end
+
+  def count_feedback_pegs(guess)
+    @new_pegs = guess.feedback.length
+    @delta_red_pegs = guess.feedback.count('red')
+    return if @guesslist.empty?
+
+    @new_pegs -= @guesslist.last.feedback.length
+    @delta_red_pegs -= @guesslist.last.feedback.count('red')
   end
 
   def get_guess
@@ -106,13 +103,9 @@ class Ai
 
   def guess_for_position
 
-    # randomly pick 2 unlocked positions of different color from last guess
     duplicate_guess = [1]
     until duplicate_guess.empty? 
       next_guess = @guesslist.last.code.clone
-      # puts "\nnext guess set to last guess: #{next_guess}"
-      # puts "last feedback = #{@guesslist.last.feedback}"
-      # puts "swappable_indices = #{@swappable_indices}"
 
       # repick the positions if they point to the same color in the code
       @last_swapped = @swappable_indices.sample(2)
@@ -123,14 +116,9 @@ class Ai
       # swap those 2 positions for the next guess
       next_guess[@last_swapped[0]], next_guess[@last_swapped[1]] = 
         next_guess[@last_swapped[1]], next_guess[@last_swapped[0]]
-      # puts "next_guess swapped to = #{next_guess}"
+
+      # check @guesslist for duplicate
       duplicate_guess = @guesslist.select {|guess| guess.code == next_guess}
-
-
-      # puts "duplicate_guess = #{duplicate_guess}"
-      # counter = 0
-      # @guesslist.each {|g| puts "Guess ##{counter += 1}: #{g.code}"}
-
     end
 
     guess = Guess.new

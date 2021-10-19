@@ -2,7 +2,7 @@
 
 # generate and keep code, and give guess feedback
 class SecretCode
-  attr_accessor :possible_colors, :secret_code
+  attr_reader :possible_colors, :secret_code
 
   def initialize
     @possible_colors = %w[red blue white green yellow black]
@@ -17,6 +17,10 @@ class SecretCode
     guess
   end
 
+  def change_secret_code(code)
+    @secret_code = code
+  end
+
   private
 
   def generate_code
@@ -27,7 +31,7 @@ class SecretCode
 
   def fill_red_pegs(guess)
     0.upto(3) do |i|
-      next unless guess.code[i] == @secret_code[i]
+      next unless guess.code[i].casecmp(@secret_code[i]).zero?
 
       guess.feedback.push('red')
       # any guess that got 'red' feedback
@@ -40,7 +44,7 @@ class SecretCode
   def fill_white_pegs(guess)
     @unmatched_guesses.each do |i|
       @unmatched_secrets.each do |j|
-        next unless guess.code[i] == @secret_code[j]
+        next unless guess.code[i].casecmp(@secret_code[j]).zero?
 
         guess.feedback.push('white')
         # only one feedback per peg

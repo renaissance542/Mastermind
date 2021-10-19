@@ -89,7 +89,7 @@ class Game
   end
 
   def play_create_the_code
-    computer_player = Ai.new(@secret_code.possible_colors)
+    computer_player = Ai.new(@secret_code.possible_colors.clone)
     set_code
 
     # @guess = @secret_code.generate_feedback(computer_player.guess_new_color)
@@ -132,8 +132,8 @@ class Game
   end
 
   def set_code
-    binding.pry
-    @secret_code.secret_code = prompt_colors
+    # binding.pry
+    @secret_code.change_secret_code(prompt_colors)
     puts "You set the code to #{@secret_code.secret_code}"
   end
 
@@ -152,7 +152,7 @@ class Game
   end
 
   def validate_color(color)
-    if @secret_code.possible_colors.include?(color)
+    if @secret_code.possible_colors.any? { |s| s.casecmp(color)==0 }
       return color
     else
       puts 'Invalid Input'
@@ -160,7 +160,7 @@ class Game
   end
 
   def game_over?
-    game_won = false if @guesses_remaining.zero?
+    @game_won = false if @guesses_remaining.zero?
     @guesses_remaining.zero? ||
       @guess.code.eql?(@secret_code.secret_code)
   end
