@@ -10,7 +10,7 @@ class Game
   # attr_accessor :secret_code, :guesses_remaining
 
   def initialize
-    @guesses_remaining = 12
+    @guesses_remaining = 100
     @secret_code = SecretCode.new
     @guess = Guess.new
     @game_won = true
@@ -90,11 +90,7 @@ class Game
 
   def play_create_the_code
     computer_player = Ai.new(@secret_code.possible_colors.clone)
-    set_code
-
-    # @guess = @secret_code.generate_feedback(computer_player.guess_new_color)
-    # computer_player.process_feedback(@guess)
-    # @guesses_remaining -= 1
+    # set_code
 
     until game_over?
 
@@ -102,10 +98,6 @@ class Game
       computer_player.process_feedback(@guess)
       @guesses_remaining -= 1
       @game_won = false if @guess.feedback.count('red') == 4
-
-      # puts "\nAI confirmed these colors = #{computer_player.confirmed_colors}"
-      # puts "AI swappable_indices = #{computer_player.swappable_indices}"
-      # puts "secret code is = #{@secret_code.secret_code}"
     end
     puts game_over_message('create')
   end

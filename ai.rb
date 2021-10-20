@@ -4,15 +4,13 @@ require_relative 'guess'
 
 # computer player to solve code
 class Ai
-  attr_accessor :confirmed_colors, :swappable_indices
-
   def initialize(colors)
-    @possible_colors = colors # delete after testing
+    @possible_colors = colors
     @confirmed_colors = %w[]
     @swappable_indices = [0, 1, 2, 3]
     @last_swapped = []
     @guesslist = []
-    # @guesslist.push(guess_new_color)
+    @duplicate_guess_count = 0
   end
 
   def process_feedback(guess)
@@ -20,8 +18,8 @@ class Ai
     @guesslist.push(guess)
 
     # successfully guessed new color
-    if @new_pegs > 0
-      @new_pegs.times {|i| @confirmed_colors.push(guess.code.last)}
+    if @new_pegs.positive?
+      @new_pegs.times { @confirmed_colors.push(guess.code.last) }
       @possible_colors = [] if @confirmed_colors.length == 4
     end
 
@@ -40,23 +38,10 @@ class Ai
     puts "feedback pegs = #{guess.feedback}"
   end
 
-  def count_feedback_pegs(guess)
-    @new_pegs = guess.feedback.length
-    @delta_red_pegs = guess.feedback.count('red')
-    return if @guesslist.empty?
-
-    @new_pegs -= @guesslist.last.feedback.length
-    @delta_red_pegs -= @guesslist.last.feedback.count('red')
-  end
-
-  def get_guess
-    @guesslist.pop
-  end
-
   def generate_guess
     return guess_new_color if @guesslist.empty? || @guesslist.last.feedback.length < 4
 
-    if @guesslist.last.feedback.count('white') > 2
+    if stuck_or_lost
       @last_swapped = []
       return rotate_guess
     end
@@ -79,42 +64,49 @@ class Ai
 
   # private
 
+  def count_feedback_pegs(guess)
+    @new_pegs = guess.feedback.length
+    @delta_red_pegs = guess.feedback.count('red')
+    return if @guesslist.empty?
+
+    @new_pegs -= @guesslist.last.feedback.length
+    @delta_red_pegs -= @guesslist.last.feedback.count('red')
+  end
+
+  def stuck_or_lost
+    @guesslist.last.feedback.count('white') == 4 || @duplicate_guess_count > 10
+  end
+
   def guess_new_color
     # puts "guess_new_color called"
     guess = Guess.new
     guess.code += @confirmed_colors
     new_color = @possible_colors.sample
     @possible_colors.delete(new_color)
-    until guess.code.length == 4 
-      guess.code.push(new_color)
-    end
+    guess.code.push(new_color) until guess.code.length == 4
     guess
   end
 
   def rotate_guess
+    next_guess = nil
+    next_guess = @guesslist.last.code.shuffle until valid_guess?(next_guess)
+    puts '***SHUFFLED***'
+    @duplicate_guess_count = 0
     guess = Guess.new
-    guess.code = @guesslist.last.code.shuffle
+    guess.code = next_guess
     guess
   end
 
   def guess_for_position
-
-    duplicate_guess = [1]
-    until duplicate_guess.empty? 
+    next_guess = 0
+    loop do # repick duplicate guesses to get a new guess
       next_guess = @guesslist.last.code.clone
 
-      # repick the positions if they point to the same color in the code
-      @last_swapped = @swappable_indices.sample(2)
-      until next_guess[@last_swapped[0]] != next_guess[@last_swapped[1]]
-        @last_swapped = @swappable_indices.sample(2) 
-      end
+      get_swap_indices(next_guess)
 
       # swap those 2 positions for the next guess
-      next_guess[@last_swapped[0]], next_guess[@last_swapped[1]] = 
-        next_guess[@last_swapped[1]], next_guess[@last_swapped[0]]
-
-      # check @guesslist for duplicate
-      duplicate_guess = @guesslist.select {|guess| guess.code == next_guess}
+      next_guess = swap_two_colors(next_guess)
+      break if valid_guess?(next_guess)
     end
 
     guess = Guess.new
@@ -122,4 +114,24 @@ class Ai
     guess
   end
 
+  def get_swap_indices(next_guess)
+    loop do # repick if both positions point to the same color 
+      @last_swapped = @swappable_indices.sample(2)
+      break if next_guess[@last_swapped[0]] != next_guess[@last_swapped[1]]
+    end
+  end
+
+  def swap_two_colors(next_guess)
+    next_guess[@last_swapped[0]], next_guess[@last_swapped[1]] =
+      next_guess[@last_swapped[1]], next_guess[@last_swapped[0]]
+    next_guess
+  end
+
+  def valid_guess?(code)
+    return false if code == nil
+
+    unique = @guesslist.none? { |g| g.code == code }
+    @duplicate_guess_count += 1 unless unique
+    unique
+  end
 end
