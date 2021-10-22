@@ -10,7 +10,7 @@ The second part of the game is to have the computer guess a secret code that the
 As stands the computer is usually able to guess the code in fewer than 12 guesses, but can take longer.  There are still a couple logical improvements possible, which I left in as comments and might update in a future version.
 
 This is hosted on Replit and can be run here:
-
+https://replit.com/@PhilippeRoy1/Mastermind#main.rb
     
  
 

@@ -90,7 +90,6 @@ class Ai
   def rotate_guess
     next_guess = nil
     next_guess = @guesslist.last.code.shuffle until valid_guess?(next_guess)
-    puts '***SHUFFLED***'
     @duplicate_guess_count = 0
     guess = Guess.new
     guess.code = next_guess
