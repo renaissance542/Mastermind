@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'pry-byebug'
+# require 'pry-byebug'
 require_relative 'secret_code'
 require_relative 'guess'
 require_relative 'ai'
