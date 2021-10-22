@@ -1,29 +1,16 @@
 # Mastermind
 Code-breaking game
 
-Planned setup
+This game is a chance to practice coding with Ruby.  It is an assignment as part of The Odin Project (ToP).  No code was provided, all of it is my own.
 
-Rules displayed
-  6 colors code options
-  2 colors feedback 
-Computer picks random secret code.
-Loop until win or end
-  Player picks 4 pegs
-  Guess counter increments
-  Computer gives feedback
-  Player interprets feedback
-Display win/end message
-Reveal secret code
+The first part of the game is where the computer generates a secret code and the player tries to guess the code.  The most complex thing to do was generate appropriate feedback for the player after each guess.
 
-Game
- def select mode
- def generate_code
- def game_over?
- def get_feedback
+The second part of the game is to have the computer guess a secret code that the player chooses.  This was much more difficult, as I wanted to have the computer guess using both strategy and randomness, as a person would.  
 
-Main
-  def play_game
-    def select_options
+As stands the computer is usually able to guess the code in fewer than 12 guesses, but can take longer.  There are still a couple logical improvements possible, which I left in as comments and might update in a future version.
+
+This is hosted on Replit and can be run here:
+
     
  
 

@@ -10,7 +10,7 @@ require_relative 'player'
 class Game
 
   def initialize
-    @guesses_remaining = 100
+    @guesses_remaining = 12
     @secret_code = SecretCode.new
     @guess = Guess.new
     @game_won = true
@@ -20,15 +20,20 @@ class Game
   def print_rules
     puts <<~RULES
       \n*** Rules ***
-        A secret coded has been generated from
+        A secret code has been generated from
         the following colors:
           #{@secret_code.possible_colors}
-        The code is four of those colors in order,
+        The code is four of those colors in a specific order,
         duplicates allowed.
 
-        When you guess, you will recieve feedback.
-          *red means a correct color was in the correct position
-          *white means a correct color in the wrong position
+        Example Codes:
+          ["red" "blue" "red" "black"]
+            or
+          ["white" "yellow" "yellow" "green"]
+
+        When you guess the code, you will recieve feedback.
+          "red" means a correct color was in the correct position
+          "white" means a correct color in the wrong position
 
         Example Feedback:
           [] means none of the colors in your guess were correct.
@@ -72,6 +77,10 @@ class Game
 
   def play_create_the_code
     computer_player = Ai.new(@secret_code.possible_colors.clone)
+    puts <<~PROMPT
+      \nYou must create a code of 4 colors.
+      The colors are #{@secret_code.possible_colors}
+      PROMPT
     @secret_code.change_secret_code(@player.prompt_colors)
     puts "You set the code to #{@secret_code.secret_code}"
 
@@ -86,19 +95,22 @@ class Game
 
   def play_guess_the_code
     until game_over?
-      puts "\nYou have #{@guesses_remaining} guesses left."
+      puts <<~PROMPT
+      \nYou have #{@guesses_remaining} guesses left.
+      The colors are #{@secret_code.possible_colors}
+      PROMPT
       @guess = @secret_code.generate_feedback(@player.build_guess)
       puts <<~GUESS
         Your guess feedback is: #{@guess.feedback}
       GUESS
       @guesses_remaining -= 1
       @game_won = false if @guesses_remaining.zero?
-      end_game('guess')
     end
+    end_game('guess')
   end
 
   def end_game(game_type)
-    puts player.game_over_message(game_type, @game_won)
+    puts @player.game_over_message(game_type, @game_won)
     puts "\nThe secret code was = #{@secret_code.secret_code}"
     initialize
   end

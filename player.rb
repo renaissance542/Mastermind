@@ -21,7 +21,7 @@ class Player
 
   def build_guess
     guess = Guess.new
-    puts "Your final guess is #{guess.code = prompt_colors}"
+    puts "\nYour final guess is #{guess.code = prompt_colors}"
     guess
   end
 
@@ -31,7 +31,7 @@ class Player
       puts <<~PROMPT
 
         So far your code is #{code}.
-        Enter a color: #{@possible_colors}
+        Enter a color:
       PROMPT
       color = gets.chomp
       code.push(color) if validate_color(color)
